@@ -1,0 +1,54 @@
+name: Destroy Fleetman on EKS
+
+on:
+  workflow_dispatch:
+    inputs:
+      destroy_profile:
+        description: "Also delete the Kubernetes namespace entirely"
+        required: true
+        default: "false"
+        type: choice
+        options:
+          - "false"
+          - "true"
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  destroy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: us-east-1
+
+      - name: Update kubeconfig
+        run: |
+          aws eks update-kubeconfig --region us-east-1 --name fleetman-eks
+
+      - name: Preflight
+        run: |
+          set -euo pipefail
+          kubectl get nodes
+
+      - name: Delete Fleetman resources
+        run: |
+          set -euo pipefail
+          kubectl delete -f k8s/workloads.yaml --ignore-not-found=true
+          kubectl delete -f k8s/services.yaml --ignore-not-found=true
+
+      - name: Wait for pods to terminate
+        run: |
+          kubectl get pods -w --request-timeout=30s || true
+
+      - name: Delete namespace (optional)
+        if: ${{ inputs.destroy_profile == 'true' }}
+        run: |
+          kubectl delete namespace gha-smoke --ignore-not-found=true

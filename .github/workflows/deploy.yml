@@ -1,0 +1,52 @@
+name: Deploy Fleet to EKS
+
+on:
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: us-east-1
+
+      - name: Update kubeconfig
+        run: |
+          aws eks update-kubeconfig --region us-east-1 --name fleetman-eks
+
+      - name: Preflight - confirm cluster access
+        run: |
+          set -euo pipefail
+          kubectl get nodes
+
+      - name: Deploy manifests
+        run: |
+          set -euo pipefail
+          kubectl apply -f k8s/services.yaml
+          kubectl apply -f k8s/workloads.yaml
+
+      - name: Wait for rollouts
+        run: |
+          set -euo pipefail
+          kubectl rollout status deploy/queue --timeout=180s
+          kubectl rollout status deploy/position-simulator --timeout=180s
+          kubectl rollout status deploy/position-tracker --timeout=180s
+          kubectl rollout status deploy/api-gateway --timeout=180s
+          kubectl rollout status deploy/webapp --timeout=180s
+
+      - name: Post-deploy summary
+        run: |
+          kubectl get deploy
+          kubectl get pods
+          kubectl get svc
