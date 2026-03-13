@@ -74,6 +74,19 @@ cd terraform
 terraform destroy
 ```
 
+## Observability
+
+The cluster includes a full observability stack deployed via Helm, consisting of Prometheus for metrics collection and Grafana for visualization.
+
+### Cluster Overview
+![Cluster Overview](docs/grafana-cluster-overview.png)
+
+### Node Metrics
+![Node Metrics](docs/grafana-node-metrics.png)
+
+### Application Workloads
+![Application Workloads](docs/grafana-workloads.png)
+
 ## Key Design Decisions
 
 **OIDC Authentication** — GitHub Actions assumes an IAM role via OpenID Connect rather than using stored access keys. This is the current AWS best practice for CI/CD authentication.
