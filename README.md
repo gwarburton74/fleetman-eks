@@ -87,6 +87,19 @@ The cluster includes a full observability stack deployed via Helm, consisting of
 ### Application Workloads
 ![Application Workloads](docs/grafana-workloads.png)
 
+## Datadog Integration
+
+In addition to the open-source Prometheus/Grafana stack, the cluster includes the Datadog Agent deployed via Helm, providing commercial-grade observability including infrastructure metrics, log aggregation, APM, and process monitoring.
+
+### Cluster & Node Overview
+![Datadog Nodes](docs/datadog-cluster-overview.png)
+
+### Pod Health Across All Namespaces
+![Datadog Pods](docs/datadog-pods.png)
+
+### Real-Time Log Aggregation
+![Datadog Logs](docs/datadog-logs.png)
+
 ## Key Design Decisions
 
 **OIDC Authentication** — GitHub Actions assumes an IAM role via OpenID Connect rather than using stored access keys. This is the current AWS best practice for CI/CD authentication.
@@ -96,3 +109,9 @@ The cluster includes a full observability stack deployed via Helm, consisting of
 **EKS Access Entries** — Cluster access is managed via the modern EKS access entry API rather than the legacy `aws-auth` ConfigMap.
 
 **Single NAT Gateway** — Cost optimization for non-production use. A production deployment would use one NAT Gateway per availability zone for redundancy.
+
+**Dual Observability Stack** — Both open-source (Prometheus/Grafana) and 
+commercial (Datadog) observability tools are deployed, demonstrating 
+familiarity with both approaches. Datadog is configured for the US5 region 
+with log collection, APM, process monitoring, and network performance 
+monitoring enabled.
