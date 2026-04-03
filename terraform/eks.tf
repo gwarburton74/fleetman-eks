@@ -46,3 +46,16 @@ module "eks" {
     Project = "fleetman-eks"
   }
 }
+
+# Allow EKS control plane to reach Vault Agent Injector webhook on port 8080
+# The injector runs on port 8080 on the nodes; EKS only opens specific ports by default.
+# Without this rule, the mutating webhook call is silently dropped and sidecar injection fails.
+resource "aws_security_group_rule" "vault_webhook" {
+  description              = "Allow control plane to reach Vault Agent Injector webhook"
+  type                     = "ingress"
+  from_port                = 8080
+  to_port                  = 8080
+  protocol                 = "tcp"
+  security_group_id        = module.eks.node_security_group_id
+  source_security_group_id = module.eks.cluster_security_group_id
+}
