@@ -139,13 +139,16 @@ vault.hashicorp.com/agent-inject-secret-config: "fleetman/data/config"
 
 ### Infrastructure Note
 
-The EKS node security group requires an inbound rule allowing port 8080 from the cluster security group (`sg-0619bcdae2c1ac521`) for the webhook to function. This needs to be added to Terraform.
+The EKS node security group requires an inbound rule allowing port 8080 from 
+the cluster security group for the Vault Agent Injector webhook to function. 
+This is codified in `terraform/eks.tf` as `aws_security_group_rule.vault_webhook` 
+and is applied automatically on `terraform apply`.
 
 ### Re-initializing After Cluster Rebuild
 
 Vault state does not persist across cluster rebuilds. When destroyed and rebuilt:
 1. `terraform apply`
-2. Add port 8080 rule to node security group (until Terraform is updated)
+2. 2. ~~Add port 8080 rule to node security group~~ (handled automatically by Terraform)
 3. Install Vault via Helm
 4. Re-initialize and unseal
 5. Reconfigure Kubernetes auth, KV-v2, policy, and role
