@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vault-inject-test
+  namespace: default
+  labels:
+    app: vault-inject-test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vault-inject-test
+  template:
+    metadata:
+      labels:
+        app: vault-inject-test
+      annotations:
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/role: "fleetman"
+        vault.hashicorp.com/agent-inject-secret-config: "fleetman/data/config"
+        vault.hashicorp.com/agent-inject-template-config: |
+          {{- with secret "fleetman/data/config" -}}
+          DB_URL={{ .Data.data.db_url }}
+          API_KEY={{ .Data.data.api_key }}
+          {{- end }}
+    spec:
+      serviceAccountName: fleetman-sa
+      containers:
+        - name: app
+          image: alpine:latest
+          command: ["sh", "-c", "while true; do sleep 30; done"]
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "64Mi"
+            limits:
+              cpu: "100m"
+              memory: "128Mi"
