@@ -1,0 +1,35 @@
+datadog:
+  apiKeyExistingSecret: datadog-secret
+  site: us5.datadoghq.com  # ← add this line
+  clusterName: fleetman-eks
+  
+  # Enable logs collection
+  logs:
+    enabled: true
+    containerCollectAll: true
+  
+  # Enable APM
+  apm:
+    portEnabled: true
+  
+  # Enable process monitoring
+  processAgent:
+    enabled: true
+    processCollection: true
+
+  # Enable Kubernetes state metrics
+  kubeStateMetricsEnabled: true
+
+  # Enable NPM (Network Performance Monitoring)
+  networkMonitoring:
+    enabled: true
+
+# Deploy agent on every node
+agents:
+  enabled: true
+
+# Deploy cluster agent for Kubernetes state metrics  
+clusterAgent:
+  enabled: true
+  replicas: 1
+  
