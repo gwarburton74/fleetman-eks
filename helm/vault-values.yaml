@@ -1,0 +1,32 @@
+server:
+  # Production mode - not dev mode
+  dev:
+    enabled: false
+
+  # Persistent storage using EBS
+  dataStorage:
+    enabled: true
+    size: 10Gi
+    storageClass: gp3
+
+  # High availability disabled for simplicity
+  # In production you'd run 3+ replicas
+  ha:
+    enabled: false
+
+  # Resource limits appropriate for sandbox
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 250m
+    limits:
+      memory: 256Mi
+      cpu: 250m
+
+# Vault Agent Injector - this is what injects secrets into pods
+injector:
+  enabled: true
+
+ui:
+  enabled: true
+  serviceType: ClusterIP

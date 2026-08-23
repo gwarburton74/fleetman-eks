@@ -21,6 +21,13 @@ module "eks" {
 
   enable_cluster_creator_admin_permissions = true
 
+  cluster_addons = {
+  aws-ebs-csi-driver = {
+    most_recent              = true
+    service_account_role_arn = module.ebs_csi_irsa.iam_role_arn
+  }
+}
+
   access_entries = {
     github_actions = {
       principal_arn = aws_iam_role.github_actions.arn
