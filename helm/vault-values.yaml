@@ -3,11 +3,10 @@ server:
   dev:
     enabled: false
 
-  # Persistent storage using EBS
+  # Persistent storage - storageClass set per-cloud (see vault-values-aws.yaml / vault-values-gcp.yaml)
   dataStorage:
     enabled: true
     size: 10Gi
-    storageClass: gp3
 
   # High availability disabled for simplicity
   # In production you'd run 3+ replicas
