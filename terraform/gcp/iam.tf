@@ -1,6 +1,6 @@
 resource "google_iam_workload_identity_pool" "github" {
   project                   = var.gcp_project_id
-  workload_identity_pool_id = "github-pool"
+  workload_identity_pool_id = "github-pool-v2"
   display_name              = "GitHub Actions Pool"
 }
 
